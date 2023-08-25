@@ -22,7 +22,7 @@ async function create_user(user_id, cur_time){
 }
 
 async function get_time(user_id){
-    const user = await times.findOne({ID: `${user_id}`})
+    const user = await times.findOne({ID: user_id})
     return user
 }
 
@@ -42,12 +42,12 @@ bot.on("message", (res) => {
     
     get_time(res.chat.id).then(user => {
         if (user) {
-            if ((Date.now() - user.time) / 1000 >= 30){
+            if ((Date.now() - user.time) / 1000 >= process.env.DELAY){
                 bot.sendMessage("@shitposting_in_msu", res.text || res.caption)
                 update_time(res.chat.id)
             }
             else {
-                bot.sendMessage(res.chat.id, `Простите, но вы не можете публиковать посты чаще, чем раз в 1 минуту. Пожалуйста, подождите еще ${30 - (Date.now() - user.time) / 1000} секунд.`)
+                bot.sendMessage(res.chat.id, `Простите, но вы не можете публиковать посты чаще, чем раз в 1 минуту. Пожалуйста, подождите еще ${Math.floor(process.env.DELAY - (Date.now() - user.time) / 1000)} секунд.`)
             }
         }
         else{
